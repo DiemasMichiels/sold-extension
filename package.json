@@ -1,0 +1,33 @@
+{
+  "private": true,
+  "name": "sold-extension",
+  "description": "A housing price guessing game, hiding the price of a house and asking the user to guess it.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "author": {
+    "name": "Diemas Michiels",
+    "email": "info@diemas.dev",
+    "url": "https://diemas.dev"
+  },
+  "dependencies": {
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "typescript": "5.3.3",
+    "extension": "^3.10.1"
+  },
+  "scripts": {
+    "dev": "extension dev",
+    "start": "extension start",
+    "build": "extension build",
+    "preview": "extension preview",
+    "build:chrome": "extension build --browser chrome",
+    "build:firefox": "extension build --browser firefox",
+    "build:edge": "extension build --browser edge"
+  },
+  "packageManager": "npm@11.3.0"
+}
