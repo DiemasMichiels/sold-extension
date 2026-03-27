@@ -96,10 +96,6 @@ export const sites: SiteConfig[] = [
 
 export function getCurrentSite(): SiteConfig | null {
   const hostname = window.location.hostname
-  console.log('◇─◇──◇────◇────◇─乁(ツ)ㄏ─◇────◇─────◇──◇─◇')
-  console.log('hostname')
-  console.log(hostname)
-  console.log('◇─◇──◇────◇────◇─乁(ツ)ㄏ─◇────◇─────◇──◇─◇')
   return sites.find((s) => hostname.includes(s.hostMatch)) || null
 }
 

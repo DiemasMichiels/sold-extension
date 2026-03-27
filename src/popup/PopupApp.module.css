@@ -69,8 +69,8 @@
 }
 
 .countryCard:hover {
-  border-color: #58cc02;
-  box-shadow: 0 2px 0 #58cc02;
+  border-color: #ff6b6b;
+  box-shadow: 0 2px 0 #ff6b6b;
   transform: translateY(-1px);
 }
 
