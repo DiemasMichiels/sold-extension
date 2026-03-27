@@ -1,72 +1,48 @@
-import React from "react";
-import "./styles.css";
-
-const countries = [
-  {
-    id: "immoweb",
-    country: "Belgium",
-    flag: "\u{1F1E7}\u{1F1EA}",
-    site: "Immoweb",
-    mapUrl:
-      "https://www.immoweb.be/en/map/house/for-sale?countries=BE&page=1&orderBy=relevance",
-  },
-  {
-    id: "funda",
-    country: "Netherlands",
-    flag: "\u{1F1F3}\u{1F1F1}",
-    site: "Funda",
-    mapUrl:
-      "https://www.funda.nl/en/zoeken/kaart/koop?selected_area=[%22nl%22]&zoom=8&centerLat=52.1176&centerLng=5.3773",
-  },
-  {
-    id: "rightmove",
-    country: "United Kingdom",
-    flag: "\u{1F1EC}\u{1F1E7}",
-    site: "Rightmove",
-    mapUrl: "https://www.rightmove.co.uk/property-for-sale/map.html",
-  },
-];
+import { sites } from '../sites'
+import * as styles from './PopupApp.module.css'
 
 export default function PopupApp() {
-  const handleCountryClick = (country: (typeof countries)[0]) => {
+  // TODO: Open the mapUrl in a new tab and save / pass that we want to play the game. Only when we activate it we want to see the content script on the page. Whenever someone visits the sites when the game isnt activated, we shouldnt show the game.
+
+  const handleCountryClick = (siteId: string, mapUrl: string) => {
     chrome.storage.local.set(
-      { soldActive: true, selectedCountry: country.id },
+      { soldActive: true, selectedCountry: siteId },
       () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           if (tabs[0]?.id) {
-            chrome.tabs.update(tabs[0].id, { url: country.mapUrl });
+            chrome.tabs.update(tabs[0].id, { url: mapUrl })
           }
-          window.close();
-        });
+          window.close()
+        })
       },
-    );
-  };
+    )
+  }
 
   return (
-    <div className="popup">
-      <div className="popup-header">
-        <div className="popup-logo">{"\u{1F3E0}"}</div>
-        <h1 className="popup-title">SOLD!</h1>
-        <p className="popup-subtitle">Can you guess the price?</p>
+    <div className={styles.popup}>
+      <div className={styles.header}>
+        <div className={styles.logo}>{'\u{1F3E0}'}</div>
+        <h1 className={styles.title}>SOLD!</h1>
+        <p className={styles.subtitle}>Can you guess the price?</p>
       </div>
 
-      <p className="popup-instruction">Pick a country to start</p>
+      <p className={styles.instruction}>Pick a country to start</p>
 
-      <div className="popup-countries">
-        {countries.map((c) => (
+      <div className={styles.countries}>
+        {sites.map((s) => (
           <button
-            key={c.id}
-            className="country-card"
-            onClick={() => handleCountryClick(c)}
+            key={s.id}
+            className={styles.countryCard}
+            onClick={() => handleCountryClick(s.id, s.mapUrl)}
           >
-            <span className="country-flag">{c.flag}</span>
-            <div className="country-info">
-              <span className="country-name">{c.country}</span>
-              <span className="country-site">{c.site}</span>
+            <span className={styles.countryFlag}>{s.flag}</span>
+            <div className={styles.countryInfo}>
+              <span className={styles.countryName}>{s.country}</span>
+              <span className={styles.countrySite}>{s.name}</span>
             </div>
           </button>
         ))}
       </div>
     </div>
-  );
+  )
 }

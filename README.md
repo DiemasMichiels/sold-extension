@@ -1,21 +1,6 @@
-[powered-image]: https://img.shields.io/badge/Powered%20by-Extension.js-0971fe
-[powered-url]: https://extension.js.org
+# Sold!
 
-![Powered by Extension.js][powered-image]
-
-# React New Tab Example
-
-What you’ll see: a custom new tab page rendered with React.
-
-How it works: the extension overrides the new tab and loads a React app you can extend with components and state.
-
-## Installation
-
-```bash
-npx extension@latest create <project-name> --template new-react
-cd <project-name>
-npm install
-```
+A housing price guessing game, hiding the price of a house and asking the user to guess it.
 
 ## Commands
 

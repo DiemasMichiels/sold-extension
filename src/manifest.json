@@ -23,11 +23,9 @@
         "*://*.funda.nl/*",
         "*://*.rightmove.co.uk/*"
       ],
-      "js": ["content/index.tsx"],
-      "css": ["content/styles.css"],
+      "js": ["./content/index.tsx"],
       "run_at": "document_idle"
     }
   ],
-  "permissions": ["storage", "activeTab"],
   "author": "Diemas Michiels"
 }

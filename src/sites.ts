@@ -18,7 +18,8 @@ export const sites: SiteConfig[] = [
     flag: '\u{1F1E7}\u{1F1EA}',
     name: 'Immoweb',
     currency: '\u20AC',
-    mapUrl: 'https://www.immoweb.be/en/map/house/for-sale?countries=BE&page=1&orderBy=relevance',
+    mapUrl:
+      'https://www.immoweb.be/en/map/house/for-sale?countries=BE&isNewlyBuilt=false&page=1&orderBy=relevance',
     hostMatch: 'immoweb.be',
     isListingPage: (url) => /immoweb\.be\/en\/classified\//.test(url),
     priceSelectors: [
@@ -30,7 +31,9 @@ export const sites: SiteConfig[] = [
     getPrice: (doc) => {
       const el =
         doc.querySelector('.classified__price .sr-only') ||
-        doc.querySelector('.classified__price span:not(.classified__price-label)')
+        doc.querySelector(
+          '.classified__price span:not(.classified__price-label)',
+        )
       if (!el) return null
       const text = el.textContent || ''
       const num = parseInt(text.replace(/[^\d]/g, ''), 10)
@@ -43,7 +46,8 @@ export const sites: SiteConfig[] = [
     flag: '\u{1F1F3}\u{1F1F1}',
     name: 'Funda',
     currency: '\u20AC',
-    mapUrl: 'https://www.funda.nl/en/zoeken/kaart/koop?selected_area=[%22nl%22]&zoom=8&centerLat=52.1176&centerLng=5.3773',
+    mapUrl:
+      'https://www.funda.nl/en/zoeken/kaart/koop?selected_area=[%22nl%22]&zoom=8&centerLat=52.1176&centerLng=5.3773',
     hostMatch: 'funda.nl',
     isListingPage: (url) => /funda\.nl\/(en\/)?detail\//.test(url),
     priceSelectors: [
@@ -92,6 +96,10 @@ export const sites: SiteConfig[] = [
 
 export function getCurrentSite(): SiteConfig | null {
   const hostname = window.location.hostname
+  console.log('◇─◇──◇────◇────◇─乁(ツ)ㄏ─◇────◇─────◇──◇─◇')
+  console.log('hostname')
+  console.log(hostname)
+  console.log('◇─◇──◇────◇────◇─乁(ツ)ㄏ─◇────◇─────◇──◇─◇')
   return sites.find((s) => hostname.includes(s.hostMatch)) || null
 }
 
