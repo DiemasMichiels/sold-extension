@@ -1,0 +1,60 @@
+.guessSection {
+  animation: fadeIn 0.3s ease;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 2px solid #e8e8e8;
+  border-radius: 16px;
+  padding: 4px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 3px 0 #e8e8e8;
+}
+
+.inputGroup:focus-within {
+  border-color: #58cc02;
+  box-shadow: 0 3px 0 #58cc02;
+}
+
+.currency {
+  all: initial;
+  padding: 0 4px 0 16px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #58cc02;
+  font-family: "Nunito", sans-serif;
+  line-height: 1;
+}
+
+.input {
+  all: initial;
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: #2d2d2d;
+  font-size: 22px;
+  font-weight: 800;
+  font-family: "Nunito", sans-serif;
+  padding: 14px 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.input::placeholder {
+  color: #ddd;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

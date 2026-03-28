@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
-import { formatPrice, type SiteConfig } from '../sites'
-import { getAccuracyColor, getAccuracyEmoji, getAccuracyLabel } from './utils'
+import type { SiteConfig } from '../sites'
+import BrowsePrompt from './components/BrowsePrompt'
+import NoPriceFound from './components/NoPriceFound'
+import GuessInput from './components/GuessInput'
+import ResultView from './components/ResultView'
 import * as styles from './SoldOverlay.module.css'
 
 type GameState = 'guessing' | 'result'
@@ -56,127 +59,55 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
     window.location.href = site.mapUrl
   }
 
-  if (!isOpen) {
-    return (
-      <button className={styles.fab} onClick={() => setIsOpen(true)}>
-        <span className={styles.fabIcon}>{'\u{1F3E0}'}</span>
-        <span className={styles.fabLabel}>SOLD!</span>
-      </button>
-    )
+  const renderBody = () => {
+    if (!isListing) {
+      return <BrowsePrompt />
+    }
+
+    if (gameState === 'guessing') {
+      if (actualPrice === null) {
+        return <NoPriceFound onFindNext={handleFindNext} />
+      }
+      return (
+        <GuessInput
+          currency={site.currency}
+          guess={guess}
+          onGuessChange={setGuess}
+          onSubmit={handleGuess}
+        />
+      )
+    }
+
+    if (actualPrice !== null && accuracy !== null) {
+      return (
+        <ResultView
+          accuracy={accuracy}
+          guess={guess}
+          actualPrice={actualPrice}
+          currency={site.currency}
+          onFindNext={handleFindNext}
+        />
+      )
+    }
+
+    return null
   }
 
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.card}>
-        <button className={styles.close} onClick={() => setIsOpen(false)}>
-          {'\u2715'}
-        </button>
+    <div className={styles.wrapper}>
+      <button className={styles.fab} onClick={() => setIsOpen(!isOpen)}>
+        <span
+          className={`${styles.fabChevron} ${isOpen ? styles.fabChevronOpen : ''}`}
+        >
+          ▶
+        </span>
+        <span className={styles.fabLabel}>SOLD!</span>
+        <span className={styles.fabIcon}>{'\u{1F3E0}'}</span>
+      </button>
 
-        <div className={styles.cardHeader}>
-          <div className={styles.logo}>{'\u{1F3E0}'}</div>
-          <h2 className={styles.cardTitle}>SOLD!</h2>
-        </div>
-
-        <div className={styles.cardBody}>
-          {!isListing ? (
-            <div className={styles.browseMsg}>
-              <div className={styles.emojiBig}>{'\u{1F5FA}\u{FE0F}'}</div>
-              <p className={styles.prompt}>Browse around and pick a house!</p>
-              <p className={styles.textMuted}>
-                Click on a listing to start guessing
-              </p>
-            </div>
-          ) : gameState === 'guessing' ? (
-            <div className={styles.guessSection}>
-              {actualPrice === null ? (
-                <div className={styles.noPrice}>
-                  <div className={styles.emojiBig}>{'\u{1F50D}'}</div>
-                  <p className={styles.textMuted}>
-                    Couldn't find the price on this page
-                  </p>
-                  <button
-                    className={styles.btnSecondary}
-                    onClick={handleFindNext}
-                  >
-                    Try another house
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className={styles.emojiBig}>{'\u{1F4B0}'}</div>
-                  <p className={styles.prompt}>
-                    How much does this house cost?
-                  </p>
-                  <div className={styles.inputGroup}>
-                    <span className={styles.currency}>{site.currency}</span>
-                    <input
-                      type='text'
-                      className={styles.input}
-                      placeholder='250,000'
-                      value={guess}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, '')
-                        if (raw) {
-                          setGuess(parseInt(raw, 10).toLocaleString())
-                        } else {
-                          setGuess('')
-                        }
-                      }}
-                      onKeyDown={(e) => e.key === 'Enter' && handleGuess()}
-                      autoFocus
-                    />
-                  </div>
-                  <button
-                    className={styles.btnPrimary}
-                    onClick={handleGuess}
-                    disabled={!guess}
-                  >
-                    Lock it in!
-                  </button>
-                </>
-              )}
-            </div>
-          ) : (
-            actualPrice !== null &&
-            accuracy !== null && (
-              <div className={styles.resultSection}>
-                <div className={styles.resultEmoji}>
-                  {getAccuracyEmoji(accuracy)}
-                </div>
-                <div className={styles.resultLabel}>
-                  {getAccuracyLabel(accuracy)}
-                </div>
-                <div
-                  className={styles.resultPct}
-                  style={{ color: getAccuracyColor(accuracy) }}
-                >
-                  {accuracy === 0 ? '0%' : `${accuracy}%`}
-                  <span className={styles.resultPctLabel}>off</span>
-                </div>
-
-                <div className={styles.resultPrices}>
-                  <div className={styles.resultRow}>
-                    <span className={styles.resultRowLabel}>Your guess</span>
-                    <span className={styles.resultRowValue}>
-                      {site.currency}
-                      {guess}
-                    </span>
-                  </div>
-                  <div className={styles.resultDivider}></div>
-                  <div className={styles.resultRow}>
-                    <span className={styles.resultRowLabel}>Actual price</span>
-                    <span className={styles.resultRowValueActual}>
-                      {formatPrice(actualPrice, site.currency)}
-                    </span>
-                  </div>
-                </div>
-
-                <button className={styles.btnPrimary} onClick={handleFindNext}>
-                  Next house {'\u2192'}
-                </button>
-              </div>
-            )
-          )}
+      <div className={`${styles.panel} ${isOpen ? styles.panelOpen : ''}`}>
+        <div className={styles.card}>
+          <div className={styles.cardBody}>{renderBody()}</div>
         </div>
       </div>
     </div>
