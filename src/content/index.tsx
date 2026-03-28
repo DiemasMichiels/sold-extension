@@ -11,11 +11,44 @@ export default () => {
   const site = getCurrentSite()
   if (!site) return () => {}
 
-  let cleanup = () => {}
+  // Inject price-hiding CSS synchronously at document_start — before first paint
+  const priceHider = document.createElement('style')
+  priceHider.id = 'sold-price-hider'
+  priceHider.textContent = site.priceSelectors
+    .map((s) => `${s} { visibility: hidden !important; }`)
+    .join('\n')
+  ;(document.head || document.documentElement).appendChild(priceHider)
+
+  // Hide sections matched by text content (CSS can't do this)
+  const hideByText = (root: Element | Document = document) => {
+    for (const rule of site.hideTextBlocks ?? []) {
+      for (const el of root.querySelectorAll(rule.selector)) {
+        if (el.textContent?.trim() === rule.text) {
+          const block = el.closest('.text-block')
+          if (block) (block as HTMLElement).style.display = 'none'
+        }
+      }
+    }
+  }
+
+  let observer: MutationObserver | null = null
+  if (site.hideTextBlocks?.length) {
+    observer = new MutationObserver(() => hideByText())
+    observer.observe(document.documentElement, { childList: true, subtree: true })
+  }
+
+  let cleanup = () => {
+    priceHider.remove()
+    observer?.disconnect()
+  }
 
   const init = async () => {
     const { active } = await chrome.storage.local.get('active')
-    if (!active) return
+    if (!active) {
+      priceHider.remove()
+      observer?.disconnect()
+      return
+    }
 
     // Wait for body to exist if we're running at document_start
     if (!document.body) {

@@ -19,24 +19,8 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
 
   useEffect(() => {
     if (!isListing) return
-
-    const style = document.createElement('style')
-    style.id = 'sold-price-hider'
-    style.textContent = site.priceSelectors
-      .map(
-        (s) =>
-          `${s} { visibility: hidden !important; position: relative !important; }`,
-      )
-      .join('\n')
-    document.head.appendChild(style)
-
     const price = site.getPrice(document)
     setActualPrice(price)
-
-    return () => {
-      const el = document.getElementById('sold-price-hider')
-      if (el) el.remove()
-    }
   }, [site, isListing])
 
   const handleGuess = () => {
@@ -99,7 +83,7 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
         <span
           className={`${styles.fabChevron} ${isOpen ? styles.fabChevronOpen : ''}`}
         >
-          ▶
+          ◀
         </span>
         <span className={styles.fabLabel}>SOLD!</span>
         <span className={styles.fabIcon}>{'\u{1F3E0}'}</span>

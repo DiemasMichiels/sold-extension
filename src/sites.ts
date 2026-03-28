@@ -8,6 +8,8 @@ export interface SiteConfig {
   hostMatch: string
   isListingPage: (url: string) => boolean
   priceSelectors: string[]
+  /** Hide ancestor `.text-block` when an element matching selector contains this text */
+  hideTextBlocks?: { selector: string; text: string }[]
   getPrice: (doc: Document) => number | null
 }
 
@@ -27,6 +29,13 @@ export const sites: SiteConfig[] = [
       '.classified__header--immoweb .classified__price',
       'p.classified__price',
       '.classified__price span',
+      '.card--result__price',
+      '.classified__information--financial',
+      'div[object-type="card-list-item"]',
+    ],
+    hideTextBlocks: [
+      { selector: 'h2.text-block__title', text: 'Financial' },
+      { selector: 'h2.text-block__title', text: 'Get in touch' },
     ],
     getPrice: (doc) => {
       const el =

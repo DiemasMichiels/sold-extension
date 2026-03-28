@@ -38,7 +38,7 @@ export default function PopupApp() {
         <>
           <p className={styles.instruction}>Game is active</p>
           <button className={styles.stopButton} onClick={handleStop}>
-            Stop game
+            Stop game / new country
           </button>
         </>
       ) : (
