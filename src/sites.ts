@@ -1,7 +1,7 @@
 export interface SiteConfig {
   id: string
   country: string
-  flag: string
+  countryCode: string
   name: string
   currency: string
   mapUrl: string
@@ -17,7 +17,7 @@ export const sites: SiteConfig[] = [
   {
     id: 'immoweb',
     country: 'Belgium',
-    flag: '\u{1F1E7}\u{1F1EA}',
+    countryCode: 'BE',
     name: 'Immoweb',
     currency: '\u20AC',
     mapUrl:
@@ -52,7 +52,7 @@ export const sites: SiteConfig[] = [
   {
     id: 'funda',
     country: 'Netherlands',
-    flag: '\u{1F1F3}\u{1F1F1}',
+    countryCode: 'NL',
     name: 'Funda',
     currency: '\u20AC',
     mapUrl:
@@ -78,7 +78,7 @@ export const sites: SiteConfig[] = [
   {
     id: 'rightmove',
     country: 'United Kingdom',
-    flag: '\u{1F1EC}\u{1F1E7}',
+    countryCode: 'GB',
     name: 'Rightmove',
     currency: '\u00A3',
     mapUrl: 'https://www.rightmove.co.uk/property-for-sale/map.html',

@@ -11,14 +11,17 @@
     "url": "https://diemas.dev"
   },
   "dependencies": {
+    "country-flag-icons": "^1.6.15",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },
   "devDependencies": {
+    "@rspack/plugin-react-refresh": "^1.6.1",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
-    "typescript": "5.3.3",
-    "extension": "^3.10.1"
+    "extension": "^3.10.1",
+    "react-refresh": "^0.18.0",
+    "typescript": "5.3.3"
   },
   "scripts": {
     "dev": "extension dev",

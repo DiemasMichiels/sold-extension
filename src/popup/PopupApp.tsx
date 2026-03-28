@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { sites } from '../sites'
+import * as Flags from 'country-flag-icons/react/3x2'
 import * as styles from './PopupApp.module.css'
+
+type FlagMap = typeof Flags
+type CountryCode = keyof FlagMap
 
 export default function PopupApp() {
   const [active, setActive] = useState<boolean | null>(null)
@@ -45,19 +49,23 @@ export default function PopupApp() {
         <>
           <p className={styles.instruction}>Pick a country to start</p>
           <div className={styles.countries}>
-            {sites.map((s) => (
-              <button
-                key={s.id}
-                className={styles.countryCard}
-                onClick={() => handleCountryClick(s.id, s.mapUrl)}
-              >
-                <span className={styles.countryFlag}>{s.flag}</span>
-                <div className={styles.countryInfo}>
-                  <span className={styles.countryName}>{s.country}</span>
-                  <span className={styles.countrySite}>{s.name}</span>
-                </div>
-              </button>
-            ))}
+            {sites.map((s) => {
+              const Flag = Flags[s.countryCode as CountryCode]
+
+              return (
+                <button
+                  key={s.id}
+                  className={styles.countryCard}
+                  onClick={() => handleCountryClick(s.id, s.mapUrl)}
+                >
+                  <Flag className={styles.countryFlag} />
+                  <div className={styles.countryInfo}>
+                    <span className={styles.countryName}>{s.country}</span>
+                    <span className={styles.countrySite}>{s.name}</span>
+                  </div>
+                </button>
+              )
+            })}
           </div>
         </>
       )}
