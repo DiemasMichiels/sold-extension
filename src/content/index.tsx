@@ -11,35 +11,53 @@ export default () => {
   const site = getCurrentSite()
   if (!site) return () => {}
 
-  const fontLink = document.createElement('link')
-  fontLink.id = 'sold-font-link'
-  fontLink.rel = 'stylesheet'
-  fontLink.href = FONT_URL
-  document.head.appendChild(fontLink)
+  let cleanup = () => {}
 
-  // Manually inject CSS modules — rspack's runtime doesn't do this for content scripts
-  const cssLink = document.createElement('link')
-  cssLink.id = 'sold-css-modules'
-  cssLink.rel = 'stylesheet'
-  cssLink.href = chrome.runtime.getURL('content_scripts/content-0.css')
-  document.head.appendChild(cssLink)
+  const init = async () => {
+    const { active } = await chrome.storage.local.get('active')
+    if (!active) return
 
-  const mountPoint = document.createElement('div')
-  mountPoint.id = 'sold-extension-root'
-  document.body.appendChild(mountPoint)
+    // Wait for body to exist if we're running at document_start
+    if (!document.body) {
+      await new Promise<void>((r) =>
+        document.addEventListener('DOMContentLoaded', () => r()),
+      )
+    }
 
-  const root = ReactDOM.createRoot(mountPoint)
+    const fontLink = document.createElement('link')
+    fontLink.id = 'sold-font-link'
+    fontLink.rel = 'stylesheet'
+    fontLink.href = FONT_URL
+    document.head.appendChild(fontLink)
 
-  root.render(
-    <React.StrictMode>
-      <SoldOverlay site={site} />
-    </React.StrictMode>,
-  )
+    // Manually inject CSS modules — rspack's runtime doesn't do this for content scripts
+    const cssLink = document.createElement('link')
+    cssLink.id = 'sold-css-modules'
+    cssLink.rel = 'stylesheet'
+    cssLink.href = chrome.runtime.getURL('content_scripts/content-0.css')
+    document.head.appendChild(cssLink)
 
-  return () => {
-    root.unmount()
-    mountPoint.remove()
-    fontLink.remove()
-    cssLink.remove()
+    const mountPoint = document.createElement('div')
+    mountPoint.id = 'sold-extension-root'
+    document.body.appendChild(mountPoint)
+
+    const root = ReactDOM.createRoot(mountPoint)
+
+    root.render(
+      <React.StrictMode>
+        <SoldOverlay site={site} />
+      </React.StrictMode>,
+    )
+
+    cleanup = () => {
+      root.unmount()
+      mountPoint.remove()
+      fontLink.remove()
+      cssLink.remove()
+    }
   }
+
+  init()
+
+  return () => cleanup()
 }

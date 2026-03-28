@@ -24,8 +24,9 @@
         "*://*.rightmove.co.uk/*"
       ],
       "js": ["./content/index.tsx"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ],
-  "author": "Diemas Michiels"
+  "author": "Diemas Michiels",
+  "permissions": ["storage"]
 }

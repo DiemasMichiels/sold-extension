@@ -100,3 +100,28 @@
   color: #aaa;
   font-weight: 700;
 }
+
+.stopButton {
+  width: 100%;
+  padding: 14px 16px;
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 0 #e05555;
+}
+
+.stopButton:hover {
+  background: #e05555;
+  transform: translateY(-1px);
+}
+
+.stopButton:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
