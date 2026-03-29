@@ -14,9 +14,13 @@ export default () => {
   // Inject price-hiding CSS synchronously at document_start — before first paint
   const priceHider = document.createElement('style')
   priceHider.id = 'sold-price-hider'
-  priceHider.textContent = site.priceSelectors
-    .map((s) => `${s} { visibility: hidden !important; }`)
-    .join('\n')
+  const hiddenRules = site.priceSelectors.map(
+    (s) => `${s} { visibility: hidden !important; }`,
+  )
+  const textRules = (site.priceTextSelectors ?? []).map(
+    (s) => `${s} { color: transparent !important;}`,
+  )
+  priceHider.textContent = [...hiddenRules, ...textRules].join('\n')
   ;(document.head || document.documentElement).appendChild(priceHider)
 
   // Hide sections matched by text content (CSS can't do this)
@@ -34,7 +38,10 @@ export default () => {
   let observer: MutationObserver | null = null
   if (site.hideTextBlocks?.length) {
     observer = new MutationObserver(() => hideByText())
-    observer.observe(document.documentElement, { childList: true, subtree: true })
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    })
   }
 
   let cleanup = () => {
@@ -72,7 +79,7 @@ export default () => {
 
     const mountPoint = document.createElement('div')
     mountPoint.id = 'sold-extension-root'
-    document.body.appendChild(mountPoint)
+    document.body.prepend(mountPoint)
 
     const root = ReactDOM.createRoot(mountPoint)
 
