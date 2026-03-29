@@ -39,8 +39,8 @@ export default function ResultView({
         className={styles.resultPct}
         style={{ color: getAccuracyColor(accuracy) }}
       >
-        {accuracy === 0 ? '0%' : `${accuracy}%`}
-        <span className={styles.resultPctLabel}>off</span>
+        {accuracy === 0 ? 'Spot on!' : `${accuracy}%`}
+        {accuracy !== 0 && <span className={styles.resultPctLabel}>off</span>}
       </div>
 
       <div className={styles.resultPrices}>
