@@ -1,5 +1,5 @@
 .popup {
-  padding: 16px;
+  padding: 16px 16px 8px 16px;
 }
 
 .header {
@@ -160,4 +160,22 @@
 .stopButton:active {
   transform: translateY(1px);
   box-shadow: none;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #bbb;
+  font-weight: 600;
+}
+
+.footer a {
+  color: #ff6b6b;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.footer a:hover {
+  text-decoration: underline;
 }

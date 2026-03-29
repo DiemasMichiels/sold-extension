@@ -95,6 +95,12 @@ export default function PopupApp() {
           </div>
         </>
       )}
+      <footer className={styles.footer}>
+        Made by{' '}
+        <a href='https://diemas.dev' target='_blank'>
+          diemas.dev
+        </a>
+      </footer>
     </div>
   )
 }
