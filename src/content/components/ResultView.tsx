@@ -1,4 +1,4 @@
-import { formatPrice } from '../../sites'
+import { convertCurrency, type Rates } from '../../currencies'
 import { getAccuracyColor, getAccuracyEmoji, getAccuracyLabel } from '../utils'
 import * as shared from './shared.module.css'
 import * as styles from './ResultView.module.css'
@@ -7,19 +7,34 @@ interface ResultViewProps {
   accuracy: number
   guess: string
   actualPrice: number
-  currency: string
+  siteCurrencyCode: string
+  userCurrencyCode: string
+  rates: Rates
   onFindNext: () => void
 }
 
-export default function ResultView({ accuracy, guess, actualPrice, currency, onFindNext }: ResultViewProps) {
+function formatWithCode(amount: number, code: string): string {
+  return `${code} ${amount.toLocaleString()}`
+}
+
+export default function ResultView({
+  accuracy,
+  guess,
+  actualPrice,
+  siteCurrencyCode,
+  userCurrencyCode,
+  rates,
+  onFindNext,
+}: ResultViewProps) {
+  const isSameCurrency = userCurrencyCode === siteCurrencyCode
+  const actualInUserCurrency = isSameCurrency
+    ? actualPrice
+    : convertCurrency(actualPrice, siteCurrencyCode, userCurrencyCode, rates)
+
   return (
     <div className={styles.resultSection}>
-      <div className={styles.resultEmoji}>
-        {getAccuracyEmoji(accuracy)}
-      </div>
-      <div className={styles.resultLabel}>
-        {getAccuracyLabel(accuracy)}
-      </div>
+      <div className={styles.resultEmoji}>{getAccuracyEmoji(accuracy)}</div>
+      <div className={styles.resultLabel}>{getAccuracyLabel(accuracy)}</div>
       <div
         className={styles.resultPct}
         style={{ color: getAccuracyColor(accuracy) }}
@@ -32,15 +47,16 @@ export default function ResultView({ accuracy, guess, actualPrice, currency, onF
         <div className={styles.resultRow}>
           <span className={styles.resultRowLabel}>Your guess</span>
           <span className={styles.resultRowValue}>
-            {currency}
-            {guess}
+            {userCurrencyCode} {guess}
           </span>
         </div>
         <div className={styles.resultDivider}></div>
         <div className={styles.resultRow}>
           <span className={styles.resultRowLabel}>Actual price</span>
           <span className={styles.resultRowValueActual}>
-            {formatPrice(actualPrice, currency)}
+            {isSameCurrency
+              ? formatWithCode(actualPrice, siteCurrencyCode)
+              : `${formatWithCode(actualInUserCurrency, userCurrencyCode)} (${formatWithCode(actualPrice, siteCurrencyCode)})`}
           </span>
         </div>
       </div>

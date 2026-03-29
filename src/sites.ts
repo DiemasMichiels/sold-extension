@@ -3,7 +3,10 @@ export interface SiteConfig {
   country: string
   countryCode: string
   name: string
+  /** Currency symbol for display (e.g. €, £) */
   currency: string
+  /** ISO 4217 currency code (e.g. EUR, GBP) */
+  currencyCode: string
   mapUrl: string
   hostMatch: string
   isListingPage: (url: string) => boolean
@@ -20,6 +23,7 @@ export const sites: SiteConfig[] = [
     countryCode: 'BE',
     name: 'Immoweb',
     currency: '\u20AC',
+    currencyCode: 'EUR',
     mapUrl:
       'https://www.immoweb.be/en/map/house/for-sale?countries=BE&isNewlyBuilt=false&page=1&orderBy=relevance',
     hostMatch: 'immoweb.be',
@@ -55,6 +59,7 @@ export const sites: SiteConfig[] = [
     countryCode: 'NL',
     name: 'Funda',
     currency: '\u20AC',
+    currencyCode: 'EUR',
     mapUrl:
       'https://www.funda.nl/en/zoeken/kaart/koop?selected_area=[%22nl%22]&zoom=8&centerLat=52.1176&centerLng=5.3773',
     hostMatch: 'funda.nl',
@@ -81,6 +86,7 @@ export const sites: SiteConfig[] = [
     countryCode: 'GB',
     name: 'Rightmove',
     currency: '\u00A3',
+    currencyCode: 'GBP',
     mapUrl: 'https://www.rightmove.co.uk/property-for-sale/map.html',
     hostMatch: 'rightmove.co.uk',
     isListingPage: (url) => /rightmove\.co\.uk\/properties\//.test(url),
@@ -106,8 +112,4 @@ export const sites: SiteConfig[] = [
 export function getCurrentSite(): SiteConfig | null {
   const hostname = window.location.hostname
   return sites.find((s) => hostname.includes(s.hostMatch)) || null
-}
-
-export function formatPrice(amount: number, currency: string): string {
-  return `${currency}${amount.toLocaleString()}`
 }

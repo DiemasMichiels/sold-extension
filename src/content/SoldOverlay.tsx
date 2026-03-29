@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { SiteConfig } from '../sites'
+import { convertCurrency, loadRates, type Rates } from '../currencies'
 import BrowsePrompt from './components/BrowsePrompt'
 import NoPriceFound from './components/NoPriceFound'
 import GuessInput from './components/GuessInput'
@@ -14,8 +15,20 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
   const [guess, setGuess] = useState('')
   const [actualPrice, setActualPrice] = useState<number | null>(null)
   const [accuracy, setAccuracy] = useState<number | null>(null)
+  const [userCurrencyCode, setUserCurrencyCode] = useState(site.currencyCode)
+  const [rates, setRates] = useState<Rates | null>(null)
 
   const isListing = site.isListingPage(window.location.href)
+
+  useEffect(() => {
+    chrome.storage.local.get(
+      'userCurrency',
+      ({ userCurrency }: { userCurrency: string }) => {
+        if (userCurrency) setUserCurrencyCode(userCurrency)
+      },
+    )
+    loadRates().then(setRates)
+  }, [])
 
   useEffect(() => {
     if (!isListing) return
@@ -24,12 +37,18 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
   }, [site, isListing])
 
   const handleGuess = () => {
-    if (!guess || actualPrice === null) return
+    if (!guess || actualPrice === null || !rates) return
 
     const guessNum = parseInt(guess.replace(/[^\d]/g, ''), 10)
     if (isNaN(guessNum)) return
 
-    const diff = Math.abs(guessNum - actualPrice)
+    const guessInSiteCurrency = convertCurrency(
+      guessNum,
+      userCurrencyCode,
+      site.currencyCode,
+      rates,
+    )
+    const diff = Math.abs(guessInSiteCurrency - actualPrice)
     const pct = Math.round((diff / actualPrice) * 100)
     setAccuracy(pct)
 
@@ -54,7 +73,7 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
       }
       return (
         <GuessInput
-          currency={site.currency}
+          currency={userCurrencyCode}
           guess={guess}
           onGuessChange={setGuess}
           onSubmit={handleGuess}
@@ -62,13 +81,15 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
       )
     }
 
-    if (actualPrice !== null && accuracy !== null) {
+    if (actualPrice !== null && accuracy !== null && rates) {
       return (
         <ResultView
           accuracy={accuracy}
           guess={guess}
           actualPrice={actualPrice}
-          currency={site.currency}
+          siteCurrencyCode={site.currencyCode}
+          userCurrencyCode={userCurrencyCode}
+          rates={rates}
           onFindNext={handleFindNext}
         />
       )

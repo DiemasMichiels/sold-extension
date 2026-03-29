@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { sites } from '../sites'
+import { loadCurrencies, type CurrencyInfo } from '../currencies'
 import * as Flags from 'country-flag-icons/react/3x2'
 import * as styles from './PopupApp.module.css'
 
@@ -8,12 +9,24 @@ type CountryCode = keyof FlagMap
 
 export default function PopupApp() {
   const [active, setActive] = useState<boolean | null>(null)
+  const [selectedCurrency, setSelectedCurrency] = useState('EUR')
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([])
 
   useEffect(() => {
-    chrome.storage.local.get('active', ({ active }) => {
-      setActive(!!active)
-    })
+    chrome.storage.local.get(
+      ['active', 'userCurrency'],
+      (result: Record<string, any>) => {
+        setActive(!!result.active)
+        if (result.userCurrency) setSelectedCurrency(result.userCurrency)
+      },
+    )
+    loadCurrencies().then(setCurrencies)
   }, [])
+
+  const handleCurrencyChange = (code: string) => {
+    setSelectedCurrency(code)
+    chrome.storage.local.set({ userCurrency: code })
+  }
 
   const handleCountryClick = (siteId: string, mapUrl: string) => {
     chrome.storage.local.set({ active: true }, () => {
@@ -33,6 +46,19 @@ export default function PopupApp() {
   return (
     <div className={styles.popup}>
       <div className={styles.header}>
+        <div className={styles.currencySelector}>
+          <select
+            className={styles.currencySelect}
+            value={selectedCurrency}
+            onChange={(e) => handleCurrencyChange(e.target.value)}
+          >
+            {currencies.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className={styles.logo}>{'\u{1F3E0}'}</div>
         <h1 className={styles.title}>SOLD!</h1>
         <p className={styles.subtitle}>Can you guess the price?</p>
