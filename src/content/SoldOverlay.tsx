@@ -29,8 +29,13 @@ export default function SoldOverlay({ site }: { site: SiteConfig }) {
     )
     loadRates().then(setRates)
 
-    const listener = (changes: Record<string, chrome.storage.StorageChange>) => {
-      if (changes.userCurrency?.newValue && typeof changes.userCurrency.newValue === 'string') {
+    const listener = (
+      changes: Record<string, chrome.storage.StorageChange>,
+    ) => {
+      if (
+        changes.userCurrency?.newValue &&
+        typeof changes.userCurrency.newValue === 'string'
+      ) {
         setUserCurrencyCode(changes.userCurrency.newValue)
       }
     }
