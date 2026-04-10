@@ -22,7 +22,8 @@
         "*://*.immoweb.be/*",
         "*://*.funda.nl/*",
         "*://*.rightmove.co.uk/*",
-        "*://*.zillow.com/*"
+        "*://*.zillow.com/*",
+        "*://*.finn.no/*"
       ],
       "js": ["./content/index.tsx"],
       "run_at": "document_start"

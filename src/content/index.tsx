@@ -87,21 +87,65 @@ export default () => {
     cssLink.href = chrome.runtime.getURL('content_scripts/content-0.css')
     document.head.appendChild(cssLink)
 
-    const mountPoint = document.createElement('div')
-    mountPoint.id = 'sold-extension-root'
-    document.body.prepend(mountPoint)
+    const cssModulesHref = chrome.runtime.getURL('content_scripts/content-0.css')
 
-    const root = ReactDOM.createRoot(mountPoint)
+    let root: ReactDOM.Root | null = null
 
-    root.render(
-      <React.StrictMode>
-        <SoldOverlay site={site} />
-      </React.StrictMode>,
-    )
+    const ensureInjected = () => {
+      if (!document.body) return
+
+      // Re-inject CSS in head if lost
+      if (!document.getElementById('sold-font-link')) {
+        const fl = document.createElement('link')
+        fl.id = 'sold-font-link'
+        fl.rel = 'stylesheet'
+        fl.href = FONT_URL
+        document.head.appendChild(fl)
+      }
+      if (!document.getElementById('sold-css-modules')) {
+        const cl = document.createElement('link')
+        cl.id = 'sold-css-modules'
+        cl.rel = 'stylesheet'
+        cl.href = cssModulesHref
+        document.head.appendChild(cl)
+      }
+      if (!document.getElementById('sold-price-hider')) {
+        const hider = document.createElement('style')
+        hider.id = 'sold-price-hider'
+        const rules = site.priceSelectors.map(
+          (s) => `${s} { visibility: hidden !important; }`,
+        )
+        const tRules = (site.priceTextSelectors ?? []).map(
+          (s) => `${s} { color: transparent !important; }`,
+        )
+        hider.textContent = [...rules, ...tRules].join('\n')
+        ;(document.head || document.documentElement).appendChild(hider)
+      }
+
+      // Re-mount overlay if lost
+      if (!document.getElementById('sold-extension-root')) {
+        root?.unmount()
+        const mp = document.createElement('div')
+        mp.id = 'sold-extension-root'
+        document.body.prepend(mp)
+        root = ReactDOM.createRoot(mp)
+        root.render(
+          <React.StrictMode>
+            <SoldOverlay site={site} />
+          </React.StrictMode>,
+        )
+      }
+    }
+
+    ensureInjected()
+
+    // Poll to survive frameworks that replace body content during hydration
+    const poll = setInterval(ensureInjected, 500)
 
     cleanup = () => {
-      root.unmount()
-      mountPoint.remove()
+      clearInterval(poll)
+      root?.unmount()
+      document.getElementById('sold-extension-root')?.remove()
       fontLink.remove()
       cssLink.remove()
     }

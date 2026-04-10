@@ -182,6 +182,31 @@ export const sites: SiteConfig[] = [
       return isNaN(num) ? null : num
     },
   },
+  {
+    id: 'finn',
+    country: 'Norway',
+    countryCode: 'NO',
+    name: 'Finn',
+    currency: 'kr',
+    currencyCode: 'NOK',
+    mapUrl:
+      'https://www.finn.no/map/realestate/homes?lat=64.69605&lon=14.07941&results=true&zoom=4',
+    hostMatch: 'finn.no',
+    isListingPage: (url) => /finn\.no\/realestate\/homes\/ad\.html/.test(url),
+    priceSelectors: [
+      'article > .grid > .col-span-2.mt-16.flex.justify-between.space-x-12.font-bold',
+      '[data-testid="pricing-details"]',
+    ],
+    getPrice: (doc) => {
+      const el = doc.querySelector(
+        '[data-testid="pricing-incicative-price"] span:last-child',
+      )
+      if (!el) return null
+      const text = el.textContent || ''
+      const num = parseInt(text.replace(/[^\d]/g, ''), 10)
+      return isNaN(num) ? null : num
+    },
+  },
 ]
 
 export function getCurrentSite(): SiteConfig | null {
