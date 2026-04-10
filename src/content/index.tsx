@@ -70,13 +70,6 @@ export default () => {
     fontLink.href = FONT_URL
     document.head.appendChild(fontLink)
 
-    // Manually inject CSS modules — rspack's runtime doesn't do this for content scripts
-    const cssLink = document.createElement('link')
-    cssLink.id = 'sold-css-modules'
-    cssLink.rel = 'stylesheet'
-    cssLink.href = chrome.runtime.getURL('content_scripts/content-0.css')
-    document.head.appendChild(cssLink)
-
     const mountPoint = document.createElement('div')
     mountPoint.id = 'sold-extension-root'
     document.body.prepend(mountPoint)
