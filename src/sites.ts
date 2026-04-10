@@ -13,8 +13,20 @@ export interface SiteConfig {
   priceSelectors: string[]
   /** Selectors where price text should be hidden but the element must stay visible (e.g. map pins) */
   priceTextSelectors?: string[]
-  /** Hide ancestor `.text-block` when an element matching selector contains this text */
-  hideTextBlocks?: { selector: string; text: string }[]
+  /** Hide ancestor when an element matching selector contains this text. Defaults to `.text-block` if closestSelector is omitted. */
+  hideTextBlocks?: {
+    selector: string
+    text: string
+    closestSelector?: string
+  }[]
+  /** Hide individual items: when an element matching selector has text containing textContains, hide the closest ancestor matching closestSelector (or the element itself) */
+  hideItems?: {
+    selector: string
+    textContains: string
+    closestSelector?: string
+  }[]
+  /** Enable URL polling for SPA sites like Zillow where navigation doesn't reload the page */
+  spaMode?: boolean
   getPrice: (doc: Document) => number | null
 }
 
@@ -103,6 +115,7 @@ export const sites: SiteConfig[] = [
       '[class*="SinglePinCard_price"]',
       '.sdc_stampDutyCalculator',
       '#mortgageCalculator',
+      '[data-test="pageHeaderNav"] > a > div:last-child span',
     ],
     priceTextSelectors: ['[class*="PricePin_pricePin"]'],
     getPrice: (doc) => {
@@ -110,6 +123,59 @@ export const sites: SiteConfig[] = [
         doc.querySelector('[data-testid="price"]') ||
         doc.querySelector('[data-testid="primaryPrice"]') ||
         doc.querySelector('#propertyHeaderPrice .price')
+      if (!el) return null
+      const text = el.textContent || ''
+      const num = parseInt(text.replace(/[^\d]/g, ''), 10)
+      return isNaN(num) ? null : num
+    },
+  },
+  {
+    id: 'zillow',
+    country: 'United States',
+    countryCode: 'US',
+    name: 'Zillow',
+    currency: '\u0024',
+    currencyCode: 'USD',
+    mapUrl:
+      'https://www.zillow.com/homes/for_sale/?searchQueryState=%7B%22pagination%22%3A%7B%7D%2C%22isMapVisible%22%3Atrue%2C%22mapBounds%22%3A%7B%22west%22%3A-141.2076151131316%2C%22east%22%3A-64.1275369881316%2C%22south%22%3A-1.3531568788829667%2C%22north%22%3A68.12584397703623%7D%2C%22mapZoom%22%3A4%2C%22filterState%22%3A%7B%22sort%22%3A%7B%22value%22%3A%22globalrelevanceex%22%7D%2C%22land%22%3A%7B%22value%22%3Afalse%7D%2C%22manu%22%3A%7B%22value%22%3Afalse%7D%7D%2C%22isListVisible%22%3Atrue%2C%22usersSearchTerm%22%3A%22%22%7D',
+    hostMatch: 'zillow.com',
+    isListingPage: (url) => /zillow\.com\/homedetails\//.test(url),
+    priceSelectors: [
+      '[data-testid="property-card-price"]',
+      '[data-testid="price"]',
+      '[data-testid="home-info"] .price-text',
+      '[data-testid="chip-personalize-payment-module"]',
+      '[data-testid="monthly-payment"]',
+      '[data-testid="market-value-module"]',
+      '[data-testid="monthly-payment-module"]',
+      '[data-testid="facts-and-features"] [data-testid="category-group"].last-of-type',
+      '[data-testid="action-bar-info-section"]',
+    ],
+    hideTextBlocks: [
+      {
+        selector: 'h2',
+        text: 'Price history',
+        closestSelector: '[class*="DataModule"]',
+      },
+    ],
+    hideItems: [
+      {
+        selector: '[aria-label="At a glance facts"] span',
+        textContains: '$',
+        closestSelector: '[aria-label="At a glance facts"] > div',
+      },
+      {
+        selector: '[aria-label="At a glance facts"] span',
+        textContains: 'sqft',
+        closestSelector: '[aria-label="At a glance facts"] > div',
+      },
+    ],
+    priceTextSelectors: ['[data-test="property-marker"]'],
+    spaMode: true,
+    getPrice: (doc) => {
+      const el =
+        doc.querySelector('[data-testid="home-info"] .price-text') ||
+        doc.querySelector('[data-testid="price"]')
       if (!el) return null
       const text = el.textContent || ''
       const num = parseInt(text.replace(/[^\d]/g, ''), 10)

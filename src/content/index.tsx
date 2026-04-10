@@ -28,15 +28,25 @@ export default () => {
     for (const rule of site.hideTextBlocks ?? []) {
       for (const el of root.querySelectorAll(rule.selector)) {
         if (el.textContent?.trim() === rule.text) {
-          const block = el.closest('.text-block')
+          const block = el.closest(rule.closestSelector ?? '.text-block')
           if (block) (block as HTMLElement).style.display = 'none'
+        }
+      }
+    }
+    for (const rule of site.hideItems ?? []) {
+      for (const el of root.querySelectorAll(rule.selector)) {
+        if (el.textContent?.includes(rule.textContains)) {
+          const target = rule.closestSelector
+            ? el.closest(rule.closestSelector)
+            : el
+          if (target) (target as HTMLElement).style.display = 'none'
         }
       }
     }
   }
 
   let observer: MutationObserver | null = null
-  if (site.hideTextBlocks?.length) {
+  if (site.hideTextBlocks?.length || site.hideItems?.length) {
     observer = new MutationObserver(() => hideByText())
     observer.observe(document.documentElement, {
       childList: true,
@@ -69,6 +79,13 @@ export default () => {
     fontLink.rel = 'stylesheet'
     fontLink.href = FONT_URL
     document.head.appendChild(fontLink)
+
+    // Manually inject CSS modules — rspack's runtime doesn't do this for content scripts
+    const cssLink = document.createElement('link')
+    cssLink.id = 'sold-css-modules'
+    cssLink.rel = 'stylesheet'
+    cssLink.href = chrome.runtime.getURL('content_scripts/content-0.css')
+    document.head.appendChild(cssLink)
 
     const mountPoint = document.createElement('div')
     mountPoint.id = 'sold-extension-root'

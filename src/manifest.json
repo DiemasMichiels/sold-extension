@@ -21,7 +21,8 @@
       "matches": [
         "*://*.immoweb.be/*",
         "*://*.funda.nl/*",
-        "*://*.rightmove.co.uk/*"
+        "*://*.rightmove.co.uk/*",
+        "*://*.zillow.com/*"
       ],
       "js": ["./content/index.tsx"],
       "run_at": "document_start"
