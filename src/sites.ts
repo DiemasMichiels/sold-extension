@@ -231,6 +231,53 @@ export const sites: SiteConfig[] = [
       return isNaN(num) ? null : num
     },
   },
+  {
+    id: 'realestate.co.nz',
+    country: 'New Zealand',
+    countryCode: 'NZ',
+    name: 'Realestate',
+    currency: '\u0024',
+    currencyCode: 'NZD',
+    mapUrl:
+      'https://www.realestate.co.nz/residential/sale?gbb=-29.420460341013133%2C161.67482444161547%7C-49.06666839558116%2C182.04347678536547&pm=1&scat=1%2C2%2C5%2C4%2C3&view=map',
+    hostMatch: 'realestate.co.nz',
+    isListingPage: (url) => /realestate\.co\.nz\/\d+\//.test(url),
+    priceSelectors: [
+      '[data-test="property-price-display"]',
+      '[data-test="pricing-method__price"]',
+      '[data-test="price-display__price-method"]',
+      '[data-test="market-insights__entry__standard"]',
+      '[data-test="listing__price-updates__card__content"]',
+      '[data-test="mortgage-calculator-body"]',
+    ],
+    hideTextBlocks: [
+      {
+        selector: 'h3',
+        text: 'What you can expect to pay for this property',
+        closestSelector: 'section[data-test="content-section"]',
+      },
+    ],
+    hideItems: [
+      {
+        selector: 'h3',
+        textContains: 'Capital value breakdown',
+        closestSelector: 'section[data-test="content-section"]',
+      },
+      {
+        selector: 'h3',
+        textContains: 'Property history',
+        closestSelector: 'section[data-test="content-section"]',
+      },
+    ],
+    spaMode: true,
+    getPrice: (doc) => {
+      const el = doc.querySelector('[data-test="pricing-method__price"]')
+      if (!el) return null
+      const text = el.textContent || ''
+      const num = parseInt(text.replace(/[^\d]/g, ''), 10)
+      return isNaN(num) ? null : num
+    },
+  },
 ]
 
 export function getCurrentSite(): SiteConfig | null {
