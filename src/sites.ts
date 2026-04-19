@@ -322,6 +322,49 @@ export const sites: SiteConfig[] = [
       return isNaN(num) ? null : num
     },
   },
+  {
+    id: 'daft.ie',
+    country: 'Ireland',
+    countryCode: 'IE',
+    name: 'Daft',
+    currency: '\u20AC',
+    currencyCode: 'EUR',
+    mapUrl:
+      'https://www.daft.ie/property-for-sale/ireland?mapView=true&showMap=true#6548087',
+    hostMatch: 'daft.ie',
+    isListingPage: (url) => /daft\.ie\/for-sale\/[^/]+\/\d+\/?$/.test(url),
+    priceSelectors: [
+      '[data-testid="price"]',
+      '[data-tracking="srp_price"]',
+      '[data-testid*="pop-up"] [data-testid="sub-title"]',
+    ],
+    priceTextSelectors: ['[data-testid*="pin-container"]'],
+    hideItems: [
+      {
+        selector: '[data-testid^="pin-container-"]',
+        textContains: 'POA',
+        closestSelector: '.maplibregl-marker',
+      },
+      {
+        selector: 'li span[font-weight="SEMIBOLD"]',
+        textContains: 'Price per m',
+        closestSelector: 'li',
+      },
+      {
+        selector: 'li span[font-weight="SEMIBOLD"]',
+        textContains: 'Estimated Stamp Duty',
+        closestSelector: 'li',
+      },
+    ],
+    spaMode: true,
+    getPrice: (doc) => {
+      const el = doc.querySelector('[data-testid="price"]')
+      if (!el) return null
+      const text = el.textContent || ''
+      const num = parseInt(text.replace(/[^\d]/g, ''), 10)
+      return isNaN(num) ? null : num
+    },
+  },
 ]
 
 export function getCurrentSite(): SiteConfig | null {
