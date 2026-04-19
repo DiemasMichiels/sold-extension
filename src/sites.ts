@@ -207,6 +207,30 @@ export const sites: SiteConfig[] = [
       return isNaN(num) ? null : num
     },
   },
+  {
+    id: 'realestate.com.au',
+    country: 'Australia',
+    countryCode: 'AU',
+    name: 'Realestate',
+    currency: '\u0024',
+    currencyCode: 'AUD',
+    mapUrl:
+      'https://www.realestate.com.au/buy/property-house-townhouse-unit+apartment-villa/map-1?sourcePage=rea:buy:srp&sourceElement=tab-headers',
+    hostMatch: 'realestate.com.au',
+    isListingPage: (url) => /realestate\.com\.au\/property/.test(url),
+    priceSelectors: [
+      '.property-info__middle-content',
+      '#calculator',
+      '[class*="StyledCard"] [class*="HeadlineText"]',
+    ],
+    getPrice: (doc) => {
+      const el = doc.querySelector('.property-info__middle-content')
+      if (!el) return null
+      const text = el.textContent || ''
+      const num = parseInt(text.replace(/[^\d]/g, ''), 10)
+      return isNaN(num) ? null : num
+    },
+  },
 ]
 
 export function getCurrentSite(): SiteConfig | null {

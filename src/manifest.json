@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/chrome-manifest.json",
   "chromium:manifest_version": 3,
   "firefox:manifest_version": 3,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Sold!",
   "description": "A house price guessing game. Browse real estate listings with hidden prices and test your pricing instincts!",
   "icons": {
@@ -23,7 +23,8 @@
         "*://*.funda.nl/*",
         "*://*.rightmove.co.uk/*",
         "*://*.zillow.com/*",
-        "*://*.finn.no/*"
+        "*://*.finn.no/*",
+        "*://*.realestate.com.au/*"
       ],
       "js": ["./content/index.tsx"],
       "run_at": "document_start"

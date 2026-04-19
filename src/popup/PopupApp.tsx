@@ -75,7 +75,7 @@ export default function PopupApp() {
         <>
           <p className={styles.instruction}>Pick a country to start</p>
           <div className={styles.countries}>
-            {sites.map((s) => {
+            {[...sites].sort((a, b) => a.country.localeCompare(b.country)).map((s) => {
               const Flag = Flags[s.countryCode as CountryCode]
 
               return (

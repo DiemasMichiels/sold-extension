@@ -82,6 +82,8 @@
 }
 
 .countries {
+  overflow: auto;
+  max-height: 260px;
   display: flex;
   flex-direction: column;
   gap: 8px;

@@ -2,7 +2,7 @@
   "private": true,
   "name": "sold-extension",
   "description": "A housing price guessing game, hiding the price of a house and asking the user to guess it.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "type": "module",
   "author": {
