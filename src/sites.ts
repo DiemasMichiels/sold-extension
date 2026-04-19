@@ -278,6 +278,50 @@ export const sites: SiteConfig[] = [
       return isNaN(num) ? null : num
     },
   },
+  {
+    id: 'propertypal',
+    country: 'Northern Ireland',
+    countryCode: 'GB',
+    name: 'PropertyPal',
+    currency: '\u00A3',
+    currencyCode: 'GBP',
+    mapUrl:
+      'https://www.propertypal.com/map/search?stygrp=3&stygrp=9&stygrp=8&stygrp=6&stygrp=10&sta=forSale&st=sale&term=3&pt=residential&currency=GBP&excludePoa=true&region=54.65301913942263%2C-6.726144342520115%2C9.052499999999998',
+    hostMatch: 'propertypal.com',
+    isListingPage: (url) => /propertypal\.com\/[^/]+\/\d+\/?$/.test(url),
+    priceSelectors: [
+      '.price-info__price--main',
+      'a[href^="/"]:has(> img) p:has(strong)',
+      '.pp-background-color p:has(> span > strong)',
+    ],
+    hideTextBlocks: [
+      {
+        selector: '.pp-info-box-header span',
+        text: 'Financial Information',
+        closestSelector: '.pp-info-box',
+      },
+      {
+        selector: '.pp-info-box-header span',
+        text: 'Local House Prices',
+        closestSelector: '.pp-info-box',
+      },
+      {
+        selector: 'h2',
+        text: 'Mortgage Repayment Calculator',
+        closestSelector: 'section',
+      },
+    ],
+    spaMode: true,
+    getPrice: (doc) => {
+      const el = doc.querySelector(
+        '.pp-background-color p:has(> span > strong)',
+      )
+      if (!el) return null
+      const text = el.textContent || ''
+      const num = parseInt(text.replace(/[^\d]/g, ''), 10)
+      return isNaN(num) ? null : num
+    },
+  },
 ]
 
 export function getCurrentSite(): SiteConfig | null {
